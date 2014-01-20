@@ -7,7 +7,7 @@
 #include "TMatrixT.h"
 
 //#include "CMGTools/External/plugins/PileupJetIdProducer.cc"
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+//#include "CMGTools/External/interface/PileupJetIdentifier.h"
 // #include "CMGTools/External/interface/PileupJetIdAlgo.h"
 //#include "DataFormats/JetReco/interface/PileupJetIdentifier.h"
 
@@ -706,6 +706,8 @@ void TauNtuple::fillTracks(edm::Handle<std::vector<reco::Track> > &trackCollecti
 	}
 }
 
+
+
 void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, edm::Handle<std::vector<reco::Track> > &trackCollection) {
 
 	edm::Handle<std::vector<reco::PFTau> > HPStaus;
@@ -795,17 +797,22 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 	iEvent.getByLabel(beamSpotTag_, beamSpot);
 	for (unsigned iPFTau = 0; iPFTau < HPStaus->size(); ++iPFTau) {
 		reco::PFTauRef HPStauCandidate(HPStaus, iPFTau);
-		PFTau_Photons_p4_inDR05.push_back(std::vector<std::vector<float> >());
-		PFTau_photon_hasPixelSeed.push_back(std::vector<int> ());
-		PFTau_photon_hadronicOverEm.push_back(std::vector<float> ());
-		PFTau_photon_sigmaIetaIeta.push_back(std::vector<float> ());
-		PFTau_photon_trkSumPtHollowConeDR04.push_back(std::vector<float> ());
-		PFTau_photon_ecalRecHitSumEtConeDR04.push_back(std::vector<float> ());
-		PFTau_photon_hcalTowerSumEtConeDR04.push_back(std::vector<float> ());
 
-		PFTau_PionsP4.push_back(std::vector<std::vector<float> >());
-		PFTau_PionsCharge.push_back(std::vector<double> ());
-		if (isGoodTau(HPStauCandidate, HPSPFTauDiscriminationByMediumIsolationMVA, HPSByDecayModeFinding)) {
+		  PFTau_Photons_p4_inDR05.push_back(std::vector<std::vector<float> >());
+		  PFTau_photon_hasPixelSeed.push_back(std::vector<int> ());
+		  PFTau_photon_hadronicOverEm.push_back(std::vector<float> ());
+		  PFTau_photon_sigmaIetaIeta.push_back(std::vector<float> ());
+		  PFTau_photon_trkSumPtHollowConeDR04.push_back(std::vector<float> ());
+		  PFTau_photon_ecalRecHitSumEtConeDR04.push_back(std::vector<float> ());
+		  PFTau_photon_hcalTowerSumEtConeDR04.push_back(std::vector<float> ());
+		  
+		  PFTau_PionsP4.push_back(std::vector<std::vector<float> >());
+		  PFTau_PionsCharge.push_back(std::vector<double> ());
+
+		
+		  //	if (isGoodTau(HPStauCandidate, HPSPFTauDiscriminationByMediumIsolationMVA, HPSByDecayModeFinding)) 
+		  {
+		 
 			std::vector<float> iPFTau_Poca;
 			iPFTau_Poca.push_back(HPStauCandidate->vx());
 			iPFTau_Poca.push_back(HPStauCandidate->vy());
@@ -912,6 +919,7 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 			reco::Vertex primaryVertex = primVtxs->front();
 			// Get tracks form PFTau daugthers
 			const reco::PFCandidateRefVector cands = HPStauCandidate->signalPFChargedHadrCands();
+			std::cout<<"cands size    "<<cands.size() << " decay Id " << HPStauCandidate->decayMode()  <<std::endl; 
 			for (reco::PFCandidateRefVector::const_iterator iter = cands.begin(); iter != cands.end(); ++iter) {
 				if (iter->get()->trackRef().isNonnull())
 					SignalTracks.push_back(reco::TrackBaseRef(iter->get()->trackRef()));
@@ -1004,9 +1012,6 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 
 					reco::PhotonRef ReferenceToPhoton = PFJetGammas.at(iGamma)->photonRef();
 					reco::SuperClusterRef ReferenceToSC = PFJetGammas.at(iGamma)->superClusterRef();
-
-					// 	   hasSC.push_back(ReferenceToSC.isNonnull());
-					// 	   hasPhoton.push_back(ReferenceToPhoton.isNonnull());
 
 					if (ReferenceToSC.isNonnull()) {
 						iiSCVariables.push_back(ReferenceToSC->energy());
@@ -1117,6 +1122,7 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 				// Get tracks form PFTau daugthers
 				std::vector<reco::TransientTrack> transTrk;
 				TransientVertex transVtx;
+
 				const reco::PFCandidateRefVector cands = HPStauCandidate->signalPFChargedHadrCands();
 	
 				for (reco::PFCandidateRefVector::const_iterator iter = cands.begin(); iter != cands.end(); ++iter) {
@@ -1125,6 +1131,7 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 					else if (iter->get()->gsfTrackRef().isNonnull())
 						transTrk.push_back(transTrackBuilder->build(iter->get()->gsfTrackRef()));
 				}
+
 				///////////////////////////////////////////////////////////////////////////////////////////////
 				// Fit the secondary vertex
 				bool FitOk(true);
@@ -1204,6 +1211,8 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 						PFTau_PionsCharge.at(iPFTau).push_back(transTrkVect.at(i).charge());
 					}
 
+
+
 					// now covert a1 into LorentzVectorParticle
 					TMatrixT<double> a1_par(LorentzVectorParticle::NLorentzandVertexPar, 1);
 					TMatrixTSym<double> a1_cov(LorentzVectorParticle::NLorentzandVertexPar);
@@ -1270,7 +1279,7 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 			std::vector<std::vector<float> > iPFTau_PiZeroP4;
 			std::vector<int> iPFTau_PiZeroNumOfPhotons;
 			std::vector<int> iPFTau_PiZeroNumOfElectrons;
-
+		
 			if (PiZeroCandiate.size() != 0) {
 				for (unsigned int Pi0Index = 0; Pi0Index < PiZeroCandiate.size(); Pi0Index++) {
 					reco::RecoTauPiZero iPi0 = PiZeroCandiate.at(Pi0Index);
@@ -1340,7 +1349,9 @@ void TauNtuple::fillPFTaus(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 				}
 			}
 			PFTau_Track_idx.push_back(matches);
+
 		}
+
 	}
 }
 
@@ -1460,11 +1471,11 @@ void TauNtuple::fillPFJets(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 		edm::Handle<std::vector<reco::PFTau> > HPStaus;
 		iEvent.getByLabel(hpsTauProducer_, HPStaus);
 
-		edm::Handle<edm::ValueMap<float> > puJetIdMva;
-		iEvent.getByLabel("puJetMva", "full53xDiscriminant", puJetIdMva);
+// 		edm::Handle<edm::ValueMap<float> > puJetIdMva;
+// 		iEvent.getByLabel("puJetMva", "full53xDiscriminant", puJetIdMva);
 
-		edm::Handle<edm::ValueMap<int> > puJetIdFlag;
-		iEvent.getByLabel("puJetMva", "full53xId", puJetIdFlag);
+// 		edm::Handle<edm::ValueMap<int> > puJetIdFlag;
+// 		iEvent.getByLabel("puJetMva", "full53xId", puJetIdFlag);
 
 		for (pat::JetCollection::size_type iPatJet = 0; iPatJet < jets->size(); iPatJet++) {
 			//for(pat::JetCollection::size_type iPatJet = 0; iPatJet < PatJet.size(); iPatJet++){
@@ -1531,13 +1542,13 @@ void TauNtuple::fillPFJets(edm::Event& iEvent, const edm::EventSetup& iSetup, ed
 				PFJet_MatchedHPS_idx.push_back(idx);
 
 				/////// PU Jet ID
-				float puJetID_discr = (*puJetIdMva)[PatJet];
-				int puJetID_idflag = (*puJetIdFlag)[PatJet];
+// 				float puJetID_discr = (*puJetIdMva)[PatJet];
+// 				int puJetID_idflag = (*puJetIdFlag)[PatJet];
 
-				PFJet_PUJetID_discr.push_back(puJetID_discr);
-				PFJet_PUJetID_looseWP.push_back(PileupJetIdentifier::passJetId(puJetID_idflag, PileupJetIdentifier::kLoose));
-				PFJet_PUJetID_mediumWP.push_back(PileupJetIdentifier::passJetId(puJetID_idflag, PileupJetIdentifier::kMedium));
-				PFJet_PUJetID_tightWP.push_back(PileupJetIdentifier::passJetId(puJetID_idflag, PileupJetIdentifier::kTight));
+// 				PFJet_PUJetID_discr.push_back(puJetID_discr);
+// 				PFJet_PUJetID_looseWP.push_back(PileupJetIdentifier::passJetId(puJetID_idflag, PileupJetIdentifier::kLoose));
+// 				PFJet_PUJetID_mediumWP.push_back(PileupJetIdentifier::passJetId(puJetID_idflag, PileupJetIdentifier::kMedium));
+// 				PFJet_PUJetID_tightWP.push_back(PileupJetIdentifier::passJetId(puJetID_idflag, PileupJetIdentifier::kTight));
 
 				///////////////////////////////////////////////
 				//
