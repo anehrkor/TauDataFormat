@@ -3169,33 +3169,45 @@ void TauNtuple::fillEventInfo(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	} else {
 		edm::InputTag tauspinner("TauSpinnerReco", "TauSpinnerWT");
 		edm::Handle<double> TauSpinnerRecoHandle;
-		iEvent.getByLabel(tauspinner, TauSpinnerRecoHandle);
-		TauSpinnerWeight = *TauSpinnerRecoHandle;
+		if(iEvent.getByLabel(tauspinner, TauSpinnerRecoHandle))
+			TauSpinnerWeight = *TauSpinnerRecoHandle;
+		else
+			TauSpinnerWeight = 1.;
 
 		edm::InputTag seleffweight("ZmumuEvtSelEffCorrWeightProducer", "weight");
 		edm::Handle<double> ZmumuEvtSelEffCorrProducerHandle;
-		iEvent.getByLabel(seleffweight, ZmumuEvtSelEffCorrProducerHandle);
-		SelEffWeight = *ZmumuEvtSelEffCorrProducerHandle;
+		if(iEvent.getByLabel(seleffweight, ZmumuEvtSelEffCorrProducerHandle))
+			SelEffWeight = *ZmumuEvtSelEffCorrProducerHandle;
+		else
+			SelEffWeight = 1.;
 
 		edm::InputTag generator("generator", "minVisPtFilter");
 		edm::Handle<GenFilterInfo> generatorHandle;
-		iEvent.getByLabel(generator, generatorHandle);
-		MinVisPtFilter = generatorHandle->filterEfficiency();
+		if(iEvent.getByLabel(generator, generatorHandle))
+			MinVisPtFilter = generatorHandle->filterEfficiency();
+		else
+			MinVisPtFilter = 1.;
 
 		edm::InputTag kinweightpt("embeddingKineReweightRECembedding", "genTau2PtVsGenTau1Pt");
 		edm::Handle<double> embeddingKineReweightRECembeddingPtHandle;
-		iEvent.getByLabel(kinweightpt, embeddingKineReweightRECembeddingPtHandle);
-		KinWeightPt = *embeddingKineReweightRECembeddingPtHandle;
+		if(iEvent.getByLabel(kinweightpt, embeddingKineReweightRECembeddingPtHandle))
+			KinWeightPt = *embeddingKineReweightRECembeddingPtHandle;
+		else
+			KinWeightPt = 1.;
 
 		edm::InputTag kinweighteta("embeddingKineReweightRECembedding", "genTau2EtaVsGenTau1Eta");
 		edm::Handle<double> embeddingKineReweightRECembeddingEtaHandle;
-		iEvent.getByLabel(kinweighteta, embeddingKineReweightRECembeddingEtaHandle);
-		KinWeightEta = *embeddingKineReweightRECembeddingEtaHandle;
+		if(iEvent.getByLabel(kinweighteta, embeddingKineReweightRECembeddingEtaHandle))
+			KinWeightEta = *embeddingKineReweightRECembeddingEtaHandle;
+		else
+			KinWeightEta = 1.;
 
 		edm::InputTag kinweightmasspt("embeddingKineReweightRECembedding", "genDiTauMassVsGenDiTauPt");
 		edm::Handle<double> embeddingKineReweightRECembeddingMassPtHandle;
-		iEvent.getByLabel(kinweightmasspt, embeddingKineReweightRECembeddingEtaHandle);
-		KinWeightMassPt = *embeddingKineReweightRECembeddingEtaHandle;
+		if(iEvent.getByLabel(kinweightmasspt, embeddingKineReweightRECembeddingEtaHandle))
+			KinWeightMassPt = *embeddingKineReweightRECembeddingEtaHandle;
+		else
+			KinWeightMassPt = 1.;
 	}
 	EmbeddedWeight = TauSpinnerWeight * SelEffWeight * MinVisPtFilter * KinWeightPt * KinWeightEta * KinWeightMassPt;
 	if (EmbeddedWeight != TauSpinnerWeight * SelEffWeight * MinVisPtFilter * KinWeightPt * KinWeightEta * KinWeightMassPt) {
